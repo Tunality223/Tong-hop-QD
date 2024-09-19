@@ -128,13 +128,6 @@
       thaoTacCell.appendChild(openButton);
       row.appendChild(thaoTacCell);
 
-      // Cột Xóa (nút Xóa)
-      const xoaCell = document.createElement('td');
-      const xoaButton = document.createElement('button');
-      xoaButton.textContent = 'Xóa';
-      xoaButton.onclick = function() {
-        tableBody.removeChild(row);  // Xóa hàng khỏi bảng
-        removeTaiLieuFromStorage(stt);  // Xóa tài liệu khỏi LocalStorage
       };
       xoaCell.appendChild(xoaButton);
       row.appendChild(xoaCell);
