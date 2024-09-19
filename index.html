@@ -78,6 +78,7 @@
           });
           
           // Thêm tài liệu vào bảng sau khi lưu vào Firestore
+          console.log("Đã thêm tài liệu:", docRef.id); // Kiểm tra ID tài liệu mới
           addRowToTable(docRef.id, stt, tenTaiLieu, linkTaiLieu);
 
           // Ẩn form và xóa thông tin trong form
