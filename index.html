@@ -39,6 +39,7 @@
         <th>STT</th>
         <th>Tên tài liệu</th>
         <th>Thao tác</th>
+        <th>Xóa</th>
       </tr>
     </thead>
     <tbody id="table-body">
@@ -96,6 +97,16 @@
         };
         thaoTacCell.appendChild(openButton);
         row.appendChild(thaoTacCell);
+
+        // Cột Xóa (nút Xóa)
+        const xoaCell = document.createElement('td');
+        const xoaButton = document.createElement('button');
+        xoaButton.textContent = 'Xóa';
+        xoaButton.onclick = function() {
+          tableBody.removeChild(row);  // Xóa hàng khỏi bảng
+        };
+        xoaCell.appendChild(xoaButton);
+        row.appendChild(xoaCell);
 
         // Thêm hàng vào bảng
         tableBody.appendChild(row);
