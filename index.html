@@ -26,11 +26,29 @@
       padding: 5px 10px;
     }
   </style>
-  
-  <!-- Firebase SDKs -->
-  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
-  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
-  
+
+  <!-- Thêm Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+
+  <script>
+    // Cấu hình Firebase
+    const firebaseConfig = {
+       apiKey: "AIzaSyD781OwtD_-hEFvKFl7IwIGEatCy-0osMs",
+       authDomain: "tonghopqd.firebaseapp.com",
+       projectId: "tonghopqd",
+       storageBucket: "tonghopqd.appspot.com",
+       messagingSenderId: "50246279370",
+       appId: "1:50246279370:web:b751d55a43cc16aa7c5433",
+       measurementId: "G-4QC525XTCD"
+    };
+
+    // Khởi tạo Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    // Khởi tạo Firestore
+    const db = firebase.firestore();
+  </script>
 </head>
 <body>
 
@@ -65,27 +83,13 @@
   </div>
 
   <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyD781OwtD_-hEFvKFl7IwIGEatCy-0osMs",
-      authDomain: "tonghopqd.firebaseapp.com",
-      projectId: "tonghopqd",
-      storageBucket: "tonghopqd.appspot.com",
-      messagingSenderId: "50246279370",
-      appId: "1:50246279370:web:b751d55a43cc16aa7c5433",
-      measurementId: "G-4QC525XTCD"
-    };
-
-    // Initialize Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Lấy tài liệu từ Firestore và hiển thị khi tải trang
-    window.onload = async function() {
-      const querySnapshot = await db.collection("taiLieu").get();
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        addRowToTable(doc.id, data.stt, data.tenTaiLieu, data.linkTaiLieu);
+    // Hiển thị các tài liệu từ Firestore khi trang được tải
+    window.onload = function() {
+      db.collection("taiLieu").get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          addRowToTable(doc.id, data.stt, data.tenTaiLieu, data.linkTaiLieu);
+        });
       });
     };
 
@@ -94,20 +98,81 @@
       document.getElementById('form-container').style.display = 'block';
     }
 
-    // Thêm tài liệu vào bảng và Firestore
-    async function addTaiLieu() {
+    // Thêm tài liệu vào Firestore và bảng
+    function addTaiLieu() {
       const stt = document.getElementById('stt').value;
       const tenTaiLieu = document.getElementById('tenTaiLieu').value;
       const linkTaiLieu = document.getElementById('linkTaiLieu').value;
 
       // Kiểm tra nếu thông tin đầy đủ
       if (stt && tenTaiLieu && linkTaiLieu) {
+        const newTaiLieu = { stt: stt, tenTaiLieu: tenTaiLieu, linkTaiLieu: linkTaiLieu };
+        
         // Thêm tài liệu vào Firestore
-        const docRef = await db.collection("taiLieu").add({
-          stt: stt,
-          tenTaiLieu: tenTaiLieu,
-          linkTaiLieu: linkTaiLieu
-        });
+        db.collection("taiLieu").add(newTaiLieu)
+          .then((docRef) => {
+            // Thêm tài liệu vào bảng sau khi lưu vào Firestore
+            addRowToTable(docRef.id, stt, tenTaiLieu, linkTaiLieu);
 
-        // Thêm tài liệu vào bảng
-        addRowToTable(docRef.id
+            // Ẩn form và xóa thông tin trong form
+            document.getElementById('form-container').style.display = 'none';
+            document.getElementById('stt').value = '';
+            document.getElementById('tenTaiLieu').value = '';
+            document.getElementById('linkTaiLieu').value = '';
+          })
+          .catch((error) => {
+            console.error("Error adding document: ", error);
+          });
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
+      }
+    }
+
+    // Thêm hàng vào bảng
+    function addRowToTable(id, stt, tenTaiLieu, linkTaiLieu) {
+      const tableBody = document.getElementById('table-body');
+
+      // Tạo một hàng mới
+      const row = document.createElement('tr');
+
+      // Cột STT
+      const sttCell = document.createElement('td');
+      sttCell.textContent = stt;
+      row.appendChild(sttCell);
+
+      // Cột tên tài liệu
+      const tenTaiLieuCell = document.createElement('td');
+      tenTaiLieuCell.textContent = tenTaiLieu;
+      row.appendChild(tenTaiLieuCell);
+
+      // Cột Thao tác (nút Open)
+      const thaoTacCell = document.createElement('td');
+      const openButton = document.createElement('button');
+      openButton.textContent = 'Open';
+      openButton.onclick = function() {
+        window.open(linkTaiLieu, '_blank');
+      };
+      thaoTacCell.appendChild(openButton);
+      row.appendChild(thaoTacCell);
+
+      // Cột Xóa (nút Xóa)
+      const xoaCell = document.createElement('td');
+      const xoaButton = document.createElement('button');
+      xoaButton.textContent = 'Xóa';
+      xoaButton.onclick = function() {
+        // Xóa tài liệu từ Firestore và bảng
+        db.collection("taiLieu").doc(id).delete().then(() => {
+          tableBody.removeChild(row);
+        }).catch((error) => {
+          console.error("Error removing document: ", error);
+        });
+      };
+      xoaCell.appendChild(xoaButton);
+      row.appendChild(xoaCell);
+
+      // Thêm hàng vào bảng
+      tableBody.appendChild(row);
+    }
+  </script>
+</body>
+</html>
