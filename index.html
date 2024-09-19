@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tổng hợp tài liệu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    table {
+      width: 60%;
+      margin: 0 auto;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    button {
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Tổng hợp tài liệu</h1>
+
+  <button onclick="openForm()">Thêm tài liệu</button>
+
+  <table>
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên tài liệu</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody id="table-body">
+      <!-- Các tài liệu sẽ được thêm vào đây -->
+    </tbody>
+  </table>
+
+  <!-- Form nhập thông tin tài liệu -->
+  <div id="form-container" style="display: none;">
+    <h3>Thêm tài liệu mới</h3>
+    <label for="stt">STT:</label><br>
+    <input type="text" id="stt"><br>
+    <label for="tenTaiLieu">Tên tài liệu:</label><br>
+    <input type="text" id="tenTaiLieu"><br>
+    <label for="linkTaiLieu">Link Google Drive:</label><br>
+    <input type="text" id="linkTaiLieu"><br><br>
+    <button onclick="addTaiLieu()">Lưu tài liệu</button>
+  </div>
+
+  <script>
+    // Mở form thêm tài liệu
+    function openForm() {
+      document.getElementById('form-container').style.display = 'block';
+    }
+
+    // Thêm tài liệu vào bảng
+    function addTaiLieu() {
+      const stt = document.getElementById('stt').value;
+      const tenTaiLieu = document.getElementById('tenTaiLieu').value;
+      const linkTaiLieu = document.getElementById('linkTaiLieu').value;
+
+      // Kiểm tra nếu thông tin đầy đủ
+      if (stt && tenTaiLieu && linkTaiLieu) {
+        const tableBody = document.getElementById('table-body');
+
+        // Tạo một hàng mới
+        const row = document.createElement('tr');
+
+        // Cột STT
+        const sttCell = document.createElement('td');
+        sttCell.textContent = stt;
+        row.appendChild(sttCell);
+
+        // Cột tên tài liệu
+        const tenTaiLieuCell = document.createElement('td');
+        tenTaiLieuCell.textContent = tenTaiLieu;
+        row.appendChild(tenTaiLieuCell);
+
+        // Cột Thao tác (nút Open)
+        const thaoTacCell = document.createElement('td');
+        const openButton = document.createElement('button');
+        openButton.textContent = 'Open';
+        openButton.onclick = function() {
+          window.open(linkTaiLieu, '_blank');
+        };
+        thaoTacCell.appendChild(openButton);
+        row.appendChild(thaoTacCell);
+
+        // Thêm hàng vào bảng
+        tableBody.appendChild(row);
+
+        // Ẩn form và xóa thông tin trong form
+        document.getElementById('form-container').style.display = 'none';
+        document.getElementById('stt').value = '';
+        document.getElementById('tenTaiLieu').value = '';
+        document.getElementById('linkTaiLieu').value = '';
+      } else {
+        alert('Vui lòng điền đầy đủ thông tin!');
+      }
+    }
+  </script>
+</body>
+</html>
