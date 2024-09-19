@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tổng hợp tài liệu</title>
+  <title>Tổng hợp tài liệu với Firebase</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,10 +26,15 @@
       padding: 5px 10px;
     }
   </style>
+  
+  <!-- Firebase SDKs -->
+  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"></script>
+  
 </head>
 <body>
 
-  <h1>Tổng hợp tài liệu</h1>
+  <h1>Tổng hợp tài liệu với Firebase</h1>
 
   <button onclick="openForm()">Thêm tài liệu</button>
 
@@ -60,13 +65,27 @@
   </div>
 
   <script>
-    // Lấy danh sách tài liệu từ LocalStorage
-    let taiLieuList = JSON.parse(localStorage.getItem('taiLieuList')) || [];
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyD781OwtD_-hEFvKFl7IwIGEatCy-0osMs",
+      authDomain: "tonghopqd.firebaseapp.com",
+      projectId: "tonghopqd",
+      storageBucket: "tonghopqd.appspot.com",
+      messagingSenderId: "50246279370",
+      appId: "1:50246279370:web:b751d55a43cc16aa7c5433",
+      measurementId: "G-4QC525XTCD"
+    };
 
-    // Hiển thị các tài liệu khi tải trang
-    window.onload = function() {
-      taiLieuList.forEach(function(taiLieu) {
-        addRowToTable(taiLieu.stt, taiLieu.tenTaiLieu, taiLieu.linkTaiLieu);
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Lấy tài liệu từ Firestore và hiển thị khi tải trang
+    window.onload = async function() {
+      const querySnapshot = await db.collection("taiLieu").get();
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        addRowToTable(doc.id, data.stt, data.tenTaiLieu, data.linkTaiLieu);
       });
     };
 
@@ -75,81 +94,20 @@
       document.getElementById('form-container').style.display = 'block';
     }
 
-    // Thêm tài liệu vào bảng và LocalStorage
-    function addTaiLieu() {
+    // Thêm tài liệu vào bảng và Firestore
+    async function addTaiLieu() {
       const stt = document.getElementById('stt').value;
       const tenTaiLieu = document.getElementById('tenTaiLieu').value;
       const linkTaiLieu = document.getElementById('linkTaiLieu').value;
 
       // Kiểm tra nếu thông tin đầy đủ
       if (stt && tenTaiLieu && linkTaiLieu) {
-        // Thêm tài liệu vào LocalStorage
-        const newTaiLieu = { stt: stt, tenTaiLieu: tenTaiLieu, linkTaiLieu: linkTaiLieu };
-        taiLieuList.push(newTaiLieu);
-        localStorage.setItem('taiLieuList', JSON.stringify(taiLieuList));
+        // Thêm tài liệu vào Firestore
+        const docRef = await db.collection("taiLieu").add({
+          stt: stt,
+          tenTaiLieu: tenTaiLieu,
+          linkTaiLieu: linkTaiLieu
+        });
 
         // Thêm tài liệu vào bảng
-        addRowToTable(stt, tenTaiLieu, linkTaiLieu);
-
-        // Ẩn form và xóa thông tin trong form
-        document.getElementById('form-container').style.display = 'none';
-        document.getElementById('stt').value = '';
-        document.getElementById('tenTaiLieu').value = '';
-        document.getElementById('linkTaiLieu').value = '';
-      } else {
-        alert('Vui lòng điền đầy đủ thông tin!');
-      }
-    }
-
-    // Thêm hàng vào bảng
-    function addRowToTable(stt, tenTaiLieu, linkTaiLieu) {
-      const tableBody = document.getElementById('table-body');
-
-      // Tạo một hàng mới
-      const row = document.createElement('tr');
-
-      // Cột STT
-      const sttCell = document.createElement('td');
-      sttCell.textContent = stt;
-      row.appendChild(sttCell);
-
-      // Cột tên tài liệu
-      const tenTaiLieuCell = document.createElement('td');
-      tenTaiLieuCell.textContent = tenTaiLieu;
-      row.appendChild(tenTaiLieuCell);
-
-      // Cột Thao tác (nút Open)
-      const thaoTacCell = document.createElement('td');
-      const openButton = document.createElement('button');
-      openButton.textContent = 'Open';
-      openButton.onclick = function() {
-        window.open(linkTaiLieu, '_blank');
-      };
-      thaoTacCell.appendChild(openButton);
-      row.appendChild(thaoTacCell);
-
-      // Cột Xóa (nút Xóa)
-      const xoaCell = document.createElement('td');
-      const xoaButton = document.createElement('button');
-      xoaButton.textContent = 'Xóa';
-      xoaButton.onclick = function() {
-        tableBody.removeChild(row);  // Xóa hàng khỏi bảng
-        removeTaiLieuFromStorage(stt);  // Xóa tài liệu khỏi LocalStorage
-      };
-      xoaCell.appendChild(xoaButton);
-      row.appendChild(xoaCell);
-
-      // Thêm hàng vào bảng
-      tableBody.appendChild(row);
-    }
-
-    // Xóa tài liệu khỏi LocalStorage
-    function removeTaiLieuFromStorage(stt) {
-      taiLieuList = taiLieuList.filter(function(taiLieu) {
-        return taiLieu.stt !== stt;
-      });
-      localStorage.setItem('taiLieuList', JSON.stringify(taiLieuList));
-    }
-  </script>
-</body>
-</html>
+        addRowToTable(docRef.id
