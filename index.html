@@ -60,12 +60,22 @@
   </div>
 
   <script>
+    // Lấy danh sách tài liệu từ LocalStorage
+    let taiLieuList = JSON.parse(localStorage.getItem('taiLieuList')) || [];
+
+    // Hiển thị các tài liệu khi tải trang
+    window.onload = function() {
+      taiLieuList.forEach(function(taiLieu) {
+        addRowToTable(taiLieu.stt, taiLieu.tenTaiLieu, taiLieu.linkTaiLieu);
+      });
+    };
+
     // Mở form thêm tài liệu
     function openForm() {
       document.getElementById('form-container').style.display = 'block';
     }
 
-    // Thêm tài liệu vào bảng
+    // Thêm tài liệu vào bảng và LocalStorage
     function addTaiLieu() {
       const stt = document.getElementById('stt').value;
       const tenTaiLieu = document.getElementById('tenTaiLieu').value;
@@ -73,43 +83,13 @@
 
       // Kiểm tra nếu thông tin đầy đủ
       if (stt && tenTaiLieu && linkTaiLieu) {
-        const tableBody = document.getElementById('table-body');
+        // Thêm tài liệu vào LocalStorage
+        const newTaiLieu = { stt: stt, tenTaiLieu: tenTaiLieu, linkTaiLieu: linkTaiLieu };
+        taiLieuList.push(newTaiLieu);
+        localStorage.setItem('taiLieuList', JSON.stringify(taiLieuList));
 
-        // Tạo một hàng mới
-        const row = document.createElement('tr');
-
-        // Cột STT
-        const sttCell = document.createElement('td');
-        sttCell.textContent = stt;
-        row.appendChild(sttCell);
-
-        // Cột tên tài liệu
-        const tenTaiLieuCell = document.createElement('td');
-        tenTaiLieuCell.textContent = tenTaiLieu;
-        row.appendChild(tenTaiLieuCell);
-
-        // Cột Thao tác (nút Open)
-        const thaoTacCell = document.createElement('td');
-        const openButton = document.createElement('button');
-        openButton.textContent = 'Open';
-        openButton.onclick = function() {
-          window.open(linkTaiLieu, '_blank');
-        };
-        thaoTacCell.appendChild(openButton);
-        row.appendChild(thaoTacCell);
-
-        // Cột Xóa (nút Xóa)
-        const xoaCell = document.createElement('td');
-        const xoaButton = document.createElement('button');
-        xoaButton.textContent = 'Xóa';
-        xoaButton.onclick = function() {
-          tableBody.removeChild(row);  // Xóa hàng khỏi bảng
-        };
-        xoaCell.appendChild(xoaButton);
-        row.appendChild(xoaCell);
-
-        // Thêm hàng vào bảng
-        tableBody.appendChild(row);
+        // Thêm tài liệu vào bảng
+        addRowToTable(stt, tenTaiLieu, linkTaiLieu);
 
         // Ẩn form và xóa thông tin trong form
         document.getElementById('form-container').style.display = 'none';
@@ -119,6 +99,56 @@
       } else {
         alert('Vui lòng điền đầy đủ thông tin!');
       }
+    }
+
+    // Thêm hàng vào bảng
+    function addRowToTable(stt, tenTaiLieu, linkTaiLieu) {
+      const tableBody = document.getElementById('table-body');
+
+      // Tạo một hàng mới
+      const row = document.createElement('tr');
+
+      // Cột STT
+      const sttCell = document.createElement('td');
+      sttCell.textContent = stt;
+      row.appendChild(sttCell);
+
+      // Cột tên tài liệu
+      const tenTaiLieuCell = document.createElement('td');
+      tenTaiLieuCell.textContent = tenTaiLieu;
+      row.appendChild(tenTaiLieuCell);
+
+      // Cột Thao tác (nút Open)
+      const thaoTacCell = document.createElement('td');
+      const openButton = document.createElement('button');
+      openButton.textContent = 'Open';
+      openButton.onclick = function() {
+        window.open(linkTaiLieu, '_blank');
+      };
+      thaoTacCell.appendChild(openButton);
+      row.appendChild(thaoTacCell);
+
+      // Cột Xóa (nút Xóa)
+      const xoaCell = document.createElement('td');
+      const xoaButton = document.createElement('button');
+      xoaButton.textContent = 'Xóa';
+      xoaButton.onclick = function() {
+        tableBody.removeChild(row);  // Xóa hàng khỏi bảng
+        removeTaiLieuFromStorage(stt);  // Xóa tài liệu khỏi LocalStorage
+      };
+      xoaCell.appendChild(xoaButton);
+      row.appendChild(xoaCell);
+
+      // Thêm hàng vào bảng
+      tableBody.appendChild(row);
+    }
+
+    // Xóa tài liệu khỏi LocalStorage
+    function removeTaiLieuFromStorage(stt) {
+      taiLieuList = taiLieuList.filter(function(taiLieu) {
+        return taiLieu.stt !== stt;
+      });
+      localStorage.setItem('taiLieuList', JSON.stringify(taiLieuList));
     }
   </script>
 </body>
