@@ -52,7 +52,7 @@
       const maTaiLieu = document.getElementById('maTaiLieu').value;
       const tenTaiLieu = document.getElementById('tenTaiLieu').value;
       const linkTaiLieu = document.getElementById('linkTaiLieu').value;
-      const linkTomTat = document.getElementById('linkTomTat').value;
+      const linkTomTat = document.getElementById('linkTomTat').value || ''; // Không bắt buộc phải nhập
 
       if (stt && maTaiLieu && tenTaiLieu && linkTaiLieu && linkTomTat) {
         try {
@@ -82,54 +82,58 @@
     };
 
     // Thêm hàng vào bảng với dữ liệu từ "Tóm tắt ND"
-    function addRowToTable(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, linkTomTat) {
-      const tableBody = document.getElementById('table-body');
-      const row = document.createElement('tr');
+   function addRowToTable(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, linkTomTat) {
+  const tableBody = document.getElementById('table-body');
+  const row = document.createElement('tr');
 
-      const sttCell = document.createElement('td');
-      sttCell.textContent = stt;
-      row.appendChild(sttCell);
+  const sttCell = document.createElement('td');
+  sttCell.textContent = stt;
+  row.appendChild(sttCell);
 
-      const maTaiLieuCell = document.createElement('td');
-      maTaiLieuCell.textContent = maTaiLieu;
-      row.appendChild(maTaiLieuCell);
+  const maTaiLieuCell = document.createElement('td');
+  maTaiLieuCell.textContent = maTaiLieu;
+  row.appendChild(maTaiLieuCell);
 
-      const tenTaiLieuCell = document.createElement('td');
-      tenTaiLieuCell.textContent = tenTaiLieu;
-      row.appendChild(tenTaiLieuCell);
+  const tenTaiLieuCell = document.createElement('td');
+  tenTaiLieuCell.textContent = tenTaiLieu;
+  row.appendChild(tenTaiLieuCell);
 
-      const thaoTacCell = document.createElement('td');
-      const openButton = document.createElement('button');
-      openButton.textContent = 'Open';
-      openButton.onclick = function() {
-        window.open(linkTaiLieu, '_blank');
-      };
-      thaoTacCell.appendChild(openButton);
+  const thaoTacCell = document.createElement('td');
+  const openButton = document.createElement('button');
+  openButton.textContent = 'Open';
+  openButton.onclick = function() {
+    window.open(linkTaiLieu, '_blank');
+  };
+  thaoTacCell.appendChild(openButton);
 
-      const tomTatButton = document.createElement('button');
-      tomTatButton.textContent = 'Tóm tắt ND';
-      tomTatButton.onclick = function() {
-        window.open(linkTomTat, '_blank');  // Sử dụng link "Tóm tắt ND"
-      };
-      thaoTacCell.appendChild(tomTatButton);
-      row.appendChild(thaoTacCell);
+  // Chỉ thêm nút "Tóm tắt ND" nếu có link
+  if (linkTomTat) {
+    const tomTatButton = document.createElement('button');
+    tomTatButton.textContent = 'Tóm tắt ND';
+    tomTatButton.onclick = function() {
+      window.open(linkTomTat, '_blank');
+    };
+    thaoTacCell.appendChild(tomTatButton);
+  }
+  
+  row.appendChild(thaoTacCell);
 
-      const xoaCell = document.createElement('td');
-      const xoaButton = document.createElement('button');
-      xoaButton.textContent = 'Xóa';
-      xoaButton.onclick = async function() {
-        try {
-          await deleteDoc(doc(db, "taiLieu", id));
-          tableBody.removeChild(row);
-        } catch (error) {
-          console.error("Error removing document: ", error);
-        }
-      };
-      xoaCell.appendChild(xoaButton);
-      row.appendChild(xoaCell);
-
-      tableBody.appendChild(row);
+  const xoaCell = document.createElement('td');
+  const xoaButton = document.createElement('button');
+  xoaButton.textContent = 'Xóa';
+  xoaButton.onclick = async function() {
+    try {
+      await deleteDoc(doc(db, "taiLieu", id));
+      tableBody.removeChild(row);
+    } catch (error) {
+      console.error("Error removing document: ", error);
     }
+  };
+  xoaCell.appendChild(xoaButton);
+  row.appendChild(xoaCell);
+
+  tableBody.appendChild(row);
+}
 
     // Load dữ liệu từ Firestore
     async function loadTaiLieu() {
@@ -169,27 +173,28 @@
   </table>
 
   <!-- Form nhập thông tin tài liệu -->
-  <div id="form-container" style="display: none;">
-    <h3>Thêm tài liệu mới</h3>
-    
-    <label for="stt">STT:</label><br>
-    <input type="text" id="stt"><br>
-    
-    <label for="maTaiLieu">Mã tài liệu:</label><br>
-    <input type="text" id="maTaiLieu"><br>
-    
-    <label for="tenTaiLieu">Tên tài liệu:</label><br>
-    <input type="text" id="tenTaiLieu"><br>
-    
-    <label for="linkTaiLieu">Link tài liệu (Open):</label><br>
-    <input type="text" id="linkTaiLieu"><br>
-    
-    <!-- Trường nhập liệu cho "Tóm tắt ND" -->
-    <label for="linkTomTat">Link tóm tắt ND:</label><br>
-    <input type="text" id="linkTomTat"><br><br>
-    
-    <button onclick="addTaiLieu()">Lưu</button>
-  </div>
+<div id="form-container" style="display: none;">
+  <h3>Thêm tài liệu mới</h3>
+  
+  <label for="stt">STT:</label><br>
+  <input type="text" id="stt"><br>
+  
+  <label for="maTaiLieu">Mã tài liệu:</label><br>
+  <input type="text" id="maTaiLieu"><br>
+  
+  <label for="tenTaiLieu">Tên tài liệu:</label><br>
+  <input type="text" id="tenTaiLieu"><br>
+  
+  <label for="linkTaiLieu">Link tài liệu :</label><br>
+  <input type="text" id="linkTaiLieu"><br>
+  
+  <!-- Trường nhập liệu cho "Tóm tắt ND" không bắt buộc -->
+  <label for="linkTomTat">Link tóm tắt ND (không bắt buộc):</label><br>
+  <input type="text" id="linkTomTat"><br><br>
+  
+  <button onclick="addTaiLieu()">Lưu</button>
+</div>
+
 
 </body>
 </html>
