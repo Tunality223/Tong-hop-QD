@@ -47,39 +47,39 @@
     const db = getFirestore(app);
 
     // Thêm tài liệu vào Firestore và bảng
-    window.addTaiLieu = async function() {
-      const stt = document.getElementById('stt').value;
-      const maTaiLieu = document.getElementById('maTaiLieu').value;
-      const tenTaiLieu = document.getElementById('tenTaiLieu').value;
-      const linkTaiLieu = document.getElementById('linkTaiLieu').value;
-      const linkTomTat = document.getElementById('linkTomTat').value || ''; // Không bắt buộc phải nhập
+   window.addTaiLieu = async function() {
+  const stt = document.getElementById('stt').value;
+  const maTaiLieu = document.getElementById('maTaiLieu').value;
+  const tenTaiLieu = document.getElementById('tenTaiLieu').value;
+  const linkTaiLieu = document.getElementById('linkTaiLieu').value;
+  const linkTomTat = document.getElementById('linkTomTat').value || ''; // Không bắt buộc phải nhập
 
-      if (stt && maTaiLieu && tenTaiLieu && linkTaiLieu && linkTomTat) {
-        try {
-          const docRef = await addDoc(collection(db, "taiLieu"), {
-            stt: stt,
-            maTaiLieu: maTaiLieu,
-            tenTaiLieu: tenTaiLieu,
-            linkTaiLieu: linkTaiLieu,
-            linkTomTat: linkTomTat  // Thêm "Tóm tắt ND"
-          });
+  if (stt && maTaiLieu && tenTaiLieu && linkTaiLieu) {
+    try {
+      const docRef = await addDoc(collection(db, "taiLieu"), {
+        stt: stt,
+        maTaiLieu: maTaiLieu,
+        tenTaiLieu: tenTaiLieu,
+        linkTaiLieu: linkTaiLieu,
+        linkTomTat: linkTomTat  // Không bắt buộc có "Tóm tắt ND"
+      });
 
-          addRowToTable(docRef.id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, linkTomTat);
+      addRowToTable(docRef.id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, linkTomTat);
 
-          // Reset form sau khi thêm
-          document.getElementById('form-container').style.display = 'none';
-          document.getElementById('stt').value = '';
-          document.getElementById('maTaiLieu').value = '';
-          document.getElementById('tenTaiLieu').value = '';
-          document.getElementById('linkTaiLieu').value = '';
-          document.getElementById('linkTomTat').value = '';  // Reset trường "Tóm tắt ND"
-        } catch (error) {
-          console.error("Error adding document: ", error);
-        }
-      } else {
-        alert('Vui lòng điền đầy đủ thông tin!');
-      }
-    };
+      // Reset form sau khi thêm
+      document.getElementById('form-container').style.display = 'none';
+      document.getElementById('stt').value = '';
+      document.getElementById('maTaiLieu').value = '';
+      document.getElementById('tenTaiLieu').value = '';
+      document.getElementById('linkTaiLieu').value = '';
+      document.getElementById('linkTomTat').value = '';  // Reset trường "Tóm tắt ND"
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  } else {
+    alert('Vui lòng điền đầy đủ thông tin bắt buộc!');
+  }
+};
 
     // Thêm hàng vào bảng với dữ liệu từ "Tóm tắt ND"
    function addRowToTable(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, linkTomTat) {
