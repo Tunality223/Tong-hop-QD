@@ -39,8 +39,23 @@
   }
 </style>
 
+  <!-- Firebase SDK -->
   <script type="module">
-    // Firebase setup (kept unchanged)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAk9AdQa3VtFTdd8BY7MliESPIgMkSZjxY",
+      authDomain: "tonghop-7378c.firebaseapp.com",
+      projectId: "tonghop-7378c",
+      storageBucket: "tonghop-7378c.appspot.com",
+      messagingSenderId: "1059897591786",
+      appId: "1:1059897591786:web:f6b4909e2fe53c74c51493",
+      measurementId: "G-5P2JYV8MG7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     window.onload = async function() {
       // Load data and display (kept unchanged)
