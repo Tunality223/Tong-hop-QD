@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tổng hợp tài liệu </title>
+  <title>Tổng hợp tài liệu</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -59,7 +59,7 @@
 
       // Hiển thị lên bảng
       dataList.forEach((data) => {
-        addRowToTable(data.id, data.stt, data.maTaiLieu, data.tenTaiLieu, data.linkTaiLieu);
+        addRowToTable(data.id, data.stt, data.maTaiLieu, data.tenTaiLieu, data.linkTaiLieu, data.tomTatLink);
       });
     };
 
@@ -74,6 +74,7 @@
       const maTaiLieu = document.getElementById('maTaiLieu').value;
       const tenTaiLieu = document.getElementById('tenTaiLieu').value;
       const linkTaiLieu = document.getElementById('linkTaiLieu').value;
+      const tomTatLink = document.getElementById('tomTatLink').value;
 
       if (stt && maTaiLieu && tenTaiLieu && linkTaiLieu) {
         try {
@@ -81,16 +82,18 @@
             stt: stt,
             maTaiLieu: maTaiLieu,
             tenTaiLieu: tenTaiLieu,
-            linkTaiLieu: linkTaiLieu
+            linkTaiLieu: linkTaiLieu,
+            tomTatLink: tomTatLink
           });
 
-          addRowToTable(docRef.id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu);
+          addRowToTable(docRef.id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, tomTatLink);
 
           document.getElementById('form-container').style.display = 'none';
           document.getElementById('stt').value = '';
           document.getElementById('maTaiLieu').value = '';
           document.getElementById('tenTaiLieu').value = '';
           document.getElementById('linkTaiLieu').value = '';
+          document.getElementById('tomTatLink').value = '';
         } catch (error) {
           console.error("Error adding document: ", error);
         }
@@ -100,7 +103,7 @@
     };
 
     // Thêm hàng vào bảng
-    function addRowToTable(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu) {
+    function addRowToTable(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, tomTatLink) {
       const tableBody = document.getElementById('table-body');
       const row = document.createElement('tr');
 
@@ -127,7 +130,11 @@
       const tomTatButton = document.createElement('button');
       tomTatButton.textContent = 'Tóm tắt ND';
       tomTatButton.onclick = function() {
-        window.open(linkTaiLieu, '_blank');
+        if (tomTatLink) {
+          window.open(tomTatLink, '_blank');
+        } else {
+          alert('Chưa có nội dung tóm tắt');
+        }
       };
       thaoTacCell.appendChild(tomTatButton);
       row.appendChild(thaoTacCell);
@@ -136,7 +143,7 @@
       const editButton = document.createElement('button');
       editButton.textContent = 'Chỉnh sửa';
       editButton.onclick = function() {
-        editRow(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu);
+        editRow(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, tomTatLink);
       };
       editCell.appendChild(editButton);
       row.appendChild(editCell);
@@ -159,11 +166,12 @@
     }
 
     // Chỉnh sửa tài liệu
-    function editRow(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu) {
+    function editRow(id, stt, maTaiLieu, tenTaiLieu, linkTaiLieu, tomTatLink) {
       document.getElementById('stt').value = stt;
       document.getElementById('maTaiLieu').value = maTaiLieu;
       document.getElementById('tenTaiLieu').value = tenTaiLieu;
       document.getElementById('linkTaiLieu').value = linkTaiLieu;
+      document.getElementById('tomTatLink').value = tomTatLink;
       document.getElementById('form-container').style.display = 'block';
 
       // Cập nhật sau khi chỉnh sửa
@@ -172,13 +180,15 @@
         const newMaTaiLieu = document.getElementById('maTaiLieu').value;
         const newTenTaiLieu = document.getElementById('tenTaiLieu').value;
         const newLinkTaiLieu = document.getElementById('linkTaiLieu').value;
+        const newTomTatLink = document.getElementById('tomTatLink').value;
 
         try {
           await updateDoc(doc(db, "taiLieu", id), {
             stt: newStt,
             maTaiLieu: newMaTaiLieu,
             tenTaiLieu: newTenTaiLieu,
-            linkTaiLieu: newLinkTaiLieu
+            linkTaiLieu: newLinkTaiLieu,
+            tomTatLink: newTomTatLink
           });
 
           location.reload(); // Reload trang để cập nhật
@@ -221,7 +231,9 @@
     <label for="tenTaiLieu">Tên tài liệu:</label><br>
     <input type="text" id="tenTaiLieu"><br>
     <label for="linkTaiLieu">Link tài liệu:</label><br>
-    <input type="text" id="linkTaiLieu"><br><br>
+    <input type="text" id="linkTaiLieu"><br>
+    <label for="tomTatLink">Link Tóm tắt ND:</label><br>
+    <input type="text" id="tomTatLink"><br><br>
     <button onclick="addTaiLieu()">Lưu</button>
   </div>
 
